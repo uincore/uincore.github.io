@@ -1,0 +1,180 @@
+//author: a1@uincore.net
+//Version: 1.0  2015-09-13
+// global definitions
+//
+
+
+
+
+LIN_description_file;
+LIN_protocol_version = "2.0" ;
+LIN_language_version = "2.0" ;
+LIN_speed = 19.2 kbps ;
+
+Nodes{
+	Master: MasterECU, 1 ms, 0 ms ;
+	Slaves: slave1, slave2 ;
+}
+
+Signals{
+	masterDIPState1: 2, 0, MasterECU, slave1, slave2 ;
+	masterDIPState2: 4, 0, MasterECU, slave1, slave2 ;
+	masterDIPState3: 1, 0, MasterECU, slave1, slave2 ;
+	masterDIPState4: 1, 0, MasterECU, slave1, slave2 ;
+	slave1DIPState1: 2, 0, slave1, MasterECU, slave2 ;
+	slave1DIPState2: 4, 0, slave1, MasterECU, slave2 ;
+	slave1DIPState3: 1, 0, slave1, MasterECU, slave2 ;
+	slave1DIPState4: 1, 0, slave1, MasterECU, slave2 ;
+	slave1Toggle: 1, 0, slave1, MasterECU ;
+	slave2DIPState1: 2, 0, slave2, MasterECU, slave1 ;
+	slave2DIPState2: 4, 0, slave2, MasterECU, slave1 ;
+	slave2DIPState3: 1, 0, slave2, MasterECU, slave1 ;
+	slave2DIPState4: 1, 0, slave2, MasterECU, slave1 ;
+	slave2Toggle: 1, 0, slave2, MasterECU ;
+	errorSignalSlave1: 1, 0, slave1, MasterECU ;
+	errorSignalSlave2: 1, 0, slave2, MasterECU ;
+}
+
+Diagnostic_signals {
+	MasterReqB0: 8, 0 ;
+	MasterReqB1: 8, 0 ;
+	MasterReqB2: 8, 0 ;
+	MasterReqB3: 8, 0 ;
+	MasterReqB4: 8, 0 ;
+	MasterReqB5: 8, 0 ;
+	MasterReqB6: 8, 0 ;
+	MasterReqB7: 8, 0 ;
+	SlaveRespB0: 8, 0 ;
+	SlaveRespB1: 8, 0 ;
+	SlaveRespB2: 8, 0 ;
+	SlaveRespB3: 8, 0 ;
+	SlaveRespB4: 8, 0 ;
+	SlaveRespB5: 8, 0 ;
+	SlaveRespB6: 8, 0 ;
+	SlaveRespB7: 8, 0 ;
+}
+
+Frames{
+	frmM1: 0, MasterECU, 2{
+		masterDIPState1, 0;
+	}
+	frmM2: 1, MasterECU, 1{
+		masterDIPState2, 0;
+	}
+	frmM3: 2, MasterECU, 1{
+		masterDIPState3, 0;
+		masterDIPState4, 1;
+	}
+	frmS11: 20, slave1, 2{
+		slave1DIPState1, 0;
+	}
+	frmS12: 21, slave1, 2{
+		slave1DIPState2, 8;
+		slave1Toggle, 12;
+	}
+	frmS13: 22, slave1, 1{
+		slave1DIPState3, 0;
+		slave1DIPState4, 1;
+		errorSignalSlave1, 2;
+	}
+	frmS21: 40, slave2, 2{
+		slave2DIPState1, 0;
+	}
+	frmS22: 41, slave2, 2{
+		slave2DIPState2, 8;
+		slave2Toggle, 12;
+	}
+	frmS23: 42, slave2, 1{
+		slave2DIPState3, 0;
+		slave2DIPState4, 1;
+		errorSignalSlave2, 2;
+	}
+}
+
+
+
+Diagnostic_frames {
+	MasterReq: 0x3c {
+		MasterReqB0, 0;
+		MasterReqB1, 8;
+		MasterReqB2, 16;
+		MasterReqB3, 24;
+		MasterReqB4, 32;
+		MasterReqB5, 40;
+		MasterReqB6, 48;
+		MasterReqB7, 56;
+	}
+	SlaveResp: 0x3d {
+		SlaveRespB0, 0;
+		SlaveRespB1, 8;
+		SlaveRespB2, 16;
+		SlaveRespB3, 24;
+		SlaveRespB4, 32;
+		SlaveRespB5, 40;
+		SlaveRespB6, 48;
+		SlaveRespB7, 56;
+	}
+}
+
+Node_attributes {
+	slave1{
+		LIN_protocol = "2.0" ;
+		configured_NAD = 0x1 ;
+		product_id = 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF ;
+		response_error = errorSignalSlave1 ;
+		P2_min = 50 ms ;
+		ST_min = 0 ms ;
+		configurable_frames{
+			frmM1 = 0x1 ;
+			frmM2 = 0x2 ;
+			frmM3 = 0x3 ;
+			frmS11 = 0x4 ;
+			frmS12 = 0x5 ;
+			frmS13 = 0x6 ;
+			frmS21 = 0x8 ;
+			frmS22 = 0x9 ;
+			frmS23 = 0x10 ;
+		}
+	}
+	slave2{
+		LIN_protocol = "2.0" ;
+		configured_NAD = 0x2 ;
+		product_id = 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF ;
+		P2_min = 50 ms ;
+		ST_min = 0 ms ;
+		configurable_frames{
+			frmM1 = 0x0 ;
+			frmM2 = 0x0 ;
+			frmM3 = 0x0 ;
+			frmS11 = 0x0 ;
+			frmS12 = 0x0 ;
+			frmS13 = 0x0 ;
+			frmS21 = 0x0 ;
+			frmS22 = 0x0 ;
+			frmS23 = 0x0 ;
+		}
+	}
+}
+
+Schedule_tables {
+ schTabConfig{
+	AssignFrameId{slave1, frmM1} delay 20 ms ;
+	AssignFrameId{slave1, frmM2} delay 20 ms ;
+	AssignFrameId{slave1, frmM3} delay 20 ms ;
+	AssignFrameId{slave1, frmS11} delay 20 ms ;
+	AssignFrameId{slave1, frmS12} delay 20 ms ;
+	AssignFrameId{slave1, frmS13} delay 20 ms ;
+	AssignFrameId{slave1, frmS21} delay 20 ms ;
+	AssignFrameId{slave1, frmS22} delay 20 ms ;
+	AssignFrameId{slave1, frmS23} delay 20 ms ;
+ }
+ schTab1{
+	frmM1 delay 20 ms ;
+	frmS11 delay 20 ms ;
+	frmS21 delay 20 ms ;
+	frmM2 delay 20 ms ;
+	frmM3 delay 20 ms ;
+	frmS13 delay 20 ms ;
+	frmS23 delay 20 ms ;
+ }
+}
